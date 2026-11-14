@@ -16,6 +16,6 @@ Este repo es el kit, no un proyecto que lo usa. `README.md` dice qué trae y có
   lo que vale siempre, la skill para lo que vale en su flujo).
 - **Probar un cambio:** instalar en un repo de prueba en el scratchpad, con `-RaizMemoria` apuntando
   ahí también, dos veces (la segunda no tiene que crear ni duplicar nada), y una vez sobre un repo con
-  `CLAUDE.md` propio. Los scripts de `orquestacion/` y `escribir-ficha/` se prueban contra un remoto
+  `CLAUDE.md` propio. Los scripts de `compuerta/` y `escribir-ficha/` se prueban contra un remoto
   bare local.
 - Al cambiar el método, actualizá "El método en una página" del `README.md`.

@@ -11,7 +11,7 @@ metadata:
 Un goal es un objetivo grande (llevar a producción, cerrar la deuda) que se ejecuta en olas, cada una
 con hasta dos sesiones en la nube, hasta que se cumple una **condición de cierre** que se puede
 comprobar. Esta skill lo planea y lo deja escrito; no lo arranca. Lo ejecuta una sesión nueva con la
-skill `orquestacion`, a partir del texto de arranque que el usuario pega.
+skills `orquestacion` y `compuerta`, a partir del texto de arranque que el usuario pega.
 
 ## Pasos
 

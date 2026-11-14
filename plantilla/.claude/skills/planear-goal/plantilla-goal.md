@@ -8,8 +8,8 @@ metadata:
 # Goal: <tema>
 
 Lo pidió <usuario> el <AAAA-MM-DD>: "<sus palabras>". **Estado:** propuesto, sin arrancar. El estado
-de partida está en [[estado-actual]]; la forma de trabajo (fichas, compuerta, merges), en la skill del
-repo `.claude/skills/orquestacion/SKILL.md`.
+de partida está en [[estado-actual]]; la forma de trabajo, en las skills del repo `orquestacion`
+(sesiones en la nube) y `compuerta` (revisión y merge de cada PR).
 
 ## Texto de arranque
 
@@ -17,7 +17,7 @@ Se pega en una sesión nueva abierta desde la carpeta del repo. La autorización
 estar escrita en la conversación: el modo automático no la toma de la memoria.
 
 > Arrancá el goal <tema> de <Proyecto> que está en la memoria `goal-<tema>.md`, desde el estado de
-> `estado-actual.md`, con la forma de trabajo de la skill `orquestacion`. Objetivo: <objetivo en una
+> `estado-actual.md`, con la forma de trabajo de las skills `orquestacion` y `compuerta`. Objetivo: <objetivo en una
 > oración>; lo que necesite llaves, cuentas o decisiones mías queda anotado. Te autorizo a lanzar las
 > sesiones en la nube de cada ola con sus fichas (como mucho dos a la vez) y a mergear a main sin
 > pedirme OK cada PR que pase la compuerta: revisión verificada sin bloqueantes, la combinación con la

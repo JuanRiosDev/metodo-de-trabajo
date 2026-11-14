@@ -23,7 +23,7 @@ lee datos simulados en vez del backend real queda en 🚧 como mucho.
 ## Próximos pasos (por dependencias)
 
 Cada tarea tiene una ficha autosuficiente en `.docs/tareas/` (skill `escribir-ficha`). Una ola son
-hasta dos sesiones con zonas que no se pisan; la compuerta de cada PR está en la skill `orquestacion`.
+hasta dos sesiones con zonas que no se pisan; cada PR pasa por la skill `compuerta` antes del merge.
 
 | Ola | Tarea | Ficha | Depende de |
 |---|---|---|---|

@@ -76,7 +76,8 @@ $creados = New-Object System.Collections.ArrayList
 $alLado = New-Object System.Collections.ArrayList
 $omitidos = New-Object System.Collections.ArrayList
 # Si el metodo ya estaba instalado, su CLAUDE.md y su ROADMAP.md son los del metodo: no se duplican.
-$yaInstalado = Test-Path (Join-Path $Destino '.claude\skills\orquestacion\SKILL.md')
+$yaInstalado = (Test-Path (Join-Path $Destino '.claude\skills\compuerta\SKILL.md')) -or
+  (Test-Path (Join-Path $Destino '.claude\skills\organizar-proyecto\SKILL.md'))
 foreach ($f in (Get-ChildItem $plantilla -Recurse -File -Force)) {
   $rel = $f.FullName.Substring($plantilla.Length + 1)
   $dst = Join-Path $Destino $rel

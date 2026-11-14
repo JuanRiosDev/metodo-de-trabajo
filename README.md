@@ -37,8 +37,10 @@ powershell -ExecutionPolicy Bypass -File "<carpeta-del-kit>\instalar.ps1" `
 
 El instalador no pisa nada: si el repo ya tiene `CLAUDE.md` o `ROADMAP.md`, deja la versión del
 método al lado (`*.metodo.md`); cualquier otro archivo que ya exista se omite. También agrega
-`/audits/` al `.gitignore` y siembra la memoria del proyecto en
-`%USERPROFILE%\.claude\projects\<carpeta-del-repo>\memory\`.
+`/audits/` al `.gitignore`, `*.sh text eol=lf` al `.gitattributes` si hace falta, y siembra la
+memoria del proyecto en `%USERPROFILE%\.claude\projects\<carpeta-del-repo>\memory\`. Según cómo se
+abra Claude Code, la sesión puede usar otra carpeta de memoria: `/adoptar-metodo` lo comprueba y deja
+una sola. Con `-SinMemoria` no se siembra nada (para un proyecto que ya tiene memoria).
 
 Después, abrí Claude Code en el repo y escribí **`/adoptar-metodo`**: lee el código, llena cada
 `COMPLETAR`, te pregunta la invariante crítica y las decisiones de negocio, arma el ROADMAP inicial y
@@ -69,23 +71,28 @@ memoria/                        plantillas de la memoria del proyecto
 | `auditoria-codigo` | "audita el código"; en el cierre de un goal | `audits/code-audit-<fecha>.md` |
 | `planear-goal` | "mándame el goal para…", "planea las próximas olas" | El plan del goal en la memoria, con el texto de arranque |
 | `escribir-ficha` | "escribe la ficha", "prepara la tarea para la nube" | Ficha en `.docs/tareas/` publicada en `docs/ficha-…` |
-| `orquestacion` | "coordinar olas", "pasar la compuerta"; al ejecutar un goal | Sesiones lanzadas, PR revisadas, compuertas y merges |
+| `compuerta` | "pasa la compuerta", "revisa esta PR", "¿se puede mergear?" | PR revisada, combinación con `main` probada, merge y comentario con los números |
+| `orquestacion` | "coordinar olas", "lanzar sesiones en la nube"; al ejecutar un goal | Sesiones en la nube lanzadas, seguidas y llevadas a la compuerta |
+
+Un repo que no usa sesiones en la nube se queda sin `orquestacion`, `planear-goal` y el hook de
+arranque (lo resuelve `/adoptar-metodo`); la compuerta, las fichas y las auditorías siguen sirviendo.
 
 Scripts (Git Bash, desde el repo):
 
 - `escribir-ficha/ficha-rama.sh`: publica una ficha en su rama sin checkout.
 - `orquestacion/lanzar-nube.ps1`: arma el lanzador de una sesión en la nube y lo abre en su ventana.
 - `orquestacion/vigia.sh`: sigue las ramas y PR de las sesiones desde un `Monitor`.
-- `orquestacion/combinacion.sh`: arma la combinación de una PR con `main` en una carpeta, sin checkout.
-- `orquestacion/compuerta.sh` + `compuerta.pasos`: la batería sobre la combinación, con un log por paso.
-- `orquestacion/ci-doble.sh`: el CI de una PR dos veces.
+- `compuerta/combinacion.sh`: arma la combinación de una PR con `main` en una carpeta, sin checkout.
+- `compuerta/compuerta.sh` + `compuerta.pasos`: la batería sobre la combinación, con un log por paso.
+- `compuerta/ci-doble.sh`: el CI de una PR dos veces.
 
 ## Flujos típicos
 
 - **Una tarea suelta en local:** pedila normal; `CLAUDE.md` ya pone las reglas (evidencia, alcance,
   resumen, memoria). Para un cambio grande, `escribir-ficha` primero.
-- **Una tarea en la nube:** `escribir-ficha`, después `orquestacion` para lanzarla, revisarla y pasarla
-  por la compuerta.
+- **Una PR (de quien sea):** `compuerta` antes del merge.
+- **Una tarea en la nube:** `escribir-ficha`, después `orquestacion` para lanzarla y seguirla, y
+  `compuerta` para su PR.
 - **Un goal:** `planear-goal` en una sesión; pegás su texto de arranque en una sesión nueva desde el
   repo, y esa sesión coordina con `orquestacion` hasta la condición de cierre.
 
