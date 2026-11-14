@@ -1,0 +1,6 @@
+# En el repositorio siempre LF. Los scripts de bash necesitan LF también en el disco de Windows,
+# porque instalar.ps1 los copia tal cual a otros repos.
+* text=auto eol=lf
+
+# PowerShell 5.1 los ejecuta igual con CRLF, que es lo nativo en Windows.
+*.ps1 text eol=crlf

@@ -1,0 +1,15 @@
+# Pasos de compuerta.sh: nombre|subcarpeta|comando (subcarpeta relativa a la combinacion; "." es la raiz).
+# Los mismos chequeos del CI, en el mismo orden, con la prueba de integracion dos veces.
+# COMPLETAR: reemplazar el ejemplo por los comandos del proyecto (skill adoptar-metodo).
+#
+# Ejemplo (monorepo con backend/ y frontend/ en Node):
+# migrate|backend|npm run db:migrate
+# lint|backend|npm run lint
+# typecheck|backend|npm run typecheck
+# build|backend|npm run build
+# unit|backend|npm test
+# e2e-1|backend|timeout 1200 npm run test:e2e
+# e2e-2|backend|timeout 1200 npm run test:e2e
+# fe-lint|frontend|npm run lint
+# fe-test|frontend|npm test
+# fe-build|frontend|npm run build

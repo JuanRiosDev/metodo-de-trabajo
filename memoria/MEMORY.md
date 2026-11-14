@@ -1,0 +1,4 @@
+- [Estado actual de {{PROYECTO}}](estado-actual.md) — dónde está main, qué PR y ramas hay abiertas, qué es del usuario y cómo está la máquina local
+- [Decisiones de producto](decisiones-producto.md) — decisiones de negocio del usuario que no se vuelven a preguntar, y las que esperan su respuesta
+- [Entorno local de {{PROYECTO}}](entorno-local.md) — cómo levantar y verificar el sistema en esta máquina, y las trampas ya pagadas
+- [No imprimir .env](no-imprimir-env.md) — nunca mostrar el contenido de un .env real: solo nombres de variables
