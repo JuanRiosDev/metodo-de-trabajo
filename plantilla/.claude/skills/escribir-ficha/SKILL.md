@@ -1,6 +1,6 @@
 ---
 name: escribir-ficha
-description: Ficha de tarea en .docs/tareas/ para una sesión que trabaja sin nadie mirando (en la nube o local), y la ficha de una ronda de revisión de su PR. Usar cuando el usuario diga "escribe la ficha" o "prepara la tarea para la nube", al armar una ola, y al mandar a arreglar lo que bloqueó una PR.
+description: Ficha de tarea en .docs/tareas/ para una sesión que trabaja sin nadie mirando (en la nube, local o Codex), y la ficha de una ronda de revisión de su PR. Usar cuando el usuario diga "escribe la ficha" o "prepara la tarea para la nube", al armar una ola, y al mandar a arreglar lo que bloqueó una PR.
 metadata:
   origin: metodo-de-trabajo
   type: workflow
@@ -36,6 +36,8 @@ conoce las otras sesiones. Lo que no está en la ficha no existe para esa sesió
    hooks de git del repo:
    `bash .claude/skills/escribir-ficha/ficha-rama.sh <archivo> .docs/tareas/<nombre> docs/ficha-<id> "docs: ficha de <ID>" [base]`.
    La sesión la trae con `git checkout origin/docs/ficha-<id> -- <ruta>` y la mete en su primer commit.
+   Una ficha para Codex no se publica: la commitea `delegar-codex` en su clon, y su prompt reemplaza
+   lo de la rama y la PR (en la ficha, "Cómo entregar" termina en la verificación).
 
 ## La ficha de revisión
 

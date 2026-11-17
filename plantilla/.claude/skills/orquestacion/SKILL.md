@@ -15,20 +15,14 @@ la conversación (o el texto de arranque de un goal).
 
 Los scripts están junto a este archivo (`.claude/skills/orquestacion/`).
 
-## Modelos
-
-Pasá el ID exacto de la versión más nueva, no el alias.
-
-- **`claude-sonnet-5-5`** para lo mecánico: tests, docs, arreglos chicos, rondas sin riesgo.
-- **`claude-opus-5-5`** para lo que toca la invariante crítica, seguridad, auth, concurrencia o una
-  migración grande.
-- **`claude-fable-5-2`** solo si el usuario lo pide o una tarea delicada falla dos rondas con Opus:
-  cuesta el doble y el límite de uso del plan es el cuello de botella.
-
 ## Sesiones
 
+- El modelo de cada sesión sale de "Modelos" en `CLAUDE.md`. Pasá el ID exacto de la versión más
+  nueva, no el alias.
 - Como mucho **dos en la nube a la vez**, escalonadas: el límite de uso es uno solo para todas,
   incluida la que coordina, y cuando se llena corta todo a mitad de camino.
+- **Codex** suma una tarea más en paralelo, si hay: no gasta ese límite. La ficha que el plan le
+  asigna va por la skill `delegar-codex`, con su zona como las demás.
 - Los arreglos chicos van **juntos en una sesión**, no una sesión por PR.
 - Las sesiones se lanzan a mano con `claude --cloud`; las rutinas programadas no, porque se cortan al
   tope de uso extra sin dejar commits.
@@ -39,7 +33,7 @@ una ventana propia, porque `claude --cloud` exige una terminal interactiva:
 ```powershell
 powershell -ExecutionPolicy Bypass -File .claude\skills\orquestacion\lanzar-nube.ps1 `
   -Repo (Get-Location) -Id P.28 -Tema "que ningun listado traiga todo" `
-  -RamaFicha docs/ficha-p28 -ArchivoFicha .docs/tareas/P28-paginacion.md -Modelo claude-sonnet-5-5
+  -RamaFicha docs/ficha-p28 -ArchivoFicha .docs/tareas/P28-paginacion.md -Modelo claude-opus-5-5
 ```
 
 Para una ronda de revisión, sumá `-Base <rama de la PR>`.
@@ -73,5 +67,5 @@ qué bloqueó y qué se mergeó, con fechas y SHAs. Al cerrar la ola, `organizar
 
 ## Subagentes
 
-Para auditorías y pruebas largas, con el modelo según la regla de arriba. Un subagente puede no tener
-permiso de escritura: que devuelva el informe en su respuesta y lo guarde quien coordina.
+Para auditorías y pruebas largas, con el modelo de "Modelos" en `CLAUDE.md`. Un subagente puede no
+tener permiso de escritura: que devuelva el informe en su respuesta y lo guarde quien coordina.

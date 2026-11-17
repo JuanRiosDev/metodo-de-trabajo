@@ -1,6 +1,7 @@
 # <ID> — decisiones
 
-> Sesión de Claude Code <en la nube | local>, modelo <modelo exacto>, <AAAA-MM-DD>:
+> Sesión de <Claude Code en la nube | Claude Code local | Codex>, modelo <modelo exacto>, esfuerzo
+> <nivel>, <AAAA-MM-DD>:
 > <enlace a la sesión>. Rama `<rama>`, desde `<base>` (`<sha corto>`).
 > Ficha: `.docs/tareas/<ID>-<tema>.md`.
 

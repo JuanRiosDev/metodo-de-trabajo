@@ -1,4 +1,4 @@
-Sesión: <enlace a la sesión, si es de la nube> · Ficha: `.docs/tareas/<ID>-<tema>.md` · Decisiones: `.docs/tareas/<ID>-decisiones.md`
+Sesión: <enlace a la sesión si es de la nube, o "Codex" y el ID de su sesión> · Ficha: `.docs/tareas/<ID>-<tema>.md` · Decisiones: `.docs/tareas/<ID>-decisiones.md`
 
 Cierra: <IDs de la deuda (`D-NN`) o de la tarea>. No toca: <zonas de las otras sesiones de la ola, si las hay>.
 

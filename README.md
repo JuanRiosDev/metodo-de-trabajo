@@ -18,14 +18,18 @@ proyecto quedó afuera: en su lugar hay marcas `COMPLETAR` que se llenan con el 
    que nunca se recorta por velocidad y que la auditoría de seguridad revisa primero.
 4. **Fichas autosuficientes** en `.docs/tareas/`: el pedido completo para una sesión que trabaja sin
    nadie mirando, con su zona, un commit y un test por punto, y un archivo de decisiones.
-5. **Olas** de hasta dos sesiones en la nube, con zonas que no se pisan, el modelo según el riesgo
-   (Sonnet lo mecánico, Opus lo delicado) y los arreglos chicos juntos.
-6. **Compuerta** antes de cada merge: revisión verificada, rondas apiladas con tope de dos, la
-   combinación con `main` probada sin checkout, la integración y el CI dos veces, el sistema levantado
-   si toca el arranque, y `main` igual al árbol probado.
-7. **Goals** con alcance, olas y una condición de cierre comprobable, arrancados con un texto que trae
+5. **Olas** de hasta dos sesiones en la nube, más una tarea para Codex (que no gasta el límite de
+   Claude), con zonas que no se pisan y los arreglos chicos juntos.
+6. **El modelo por lo que pide la tarea, no por ahorrar:** Opus por defecto, Fable para lo más
+   difícil si el plan lo tiene, esfuerzo `high`. El plan se anota en `CLAUDE.md` y las reglas dependen
+   de él. Codex programa lo que se le delega y Claude lo revisa.
+7. **Compuerta** antes de cada merge: revisión verificada de un modelo distinto del que escribió
+   (Codex revisa lo de Claude y Claude lo de Codex), rondas apiladas con tope de dos, la combinación
+   con `main` probada sin checkout, la integración y el CI dos veces, el sistema levantado si toca el
+   arranque, y `main` igual al árbol probado.
+8. **Goals** con alcance, olas y una condición de cierre comprobable, arrancados con un texto que trae
    la autorización de merge por escrito.
-8. **Memoria al día** al cerrar cada tarea: estado, decisiones de producto, entorno y el progreso del
+9. **Memoria al día** al cerrar cada tarea: estado, decisiones de producto, entorno y el progreso del
    goal, con fechas absolutas.
 
 ## Instalar en un repo
@@ -43,8 +47,14 @@ abra Claude Code, la sesión puede usar otra carpeta de memoria: `/adoptar-metod
 una sola. Con `-SinMemoria` no se siembra nada (para un proyecto que ya tiene memoria).
 
 Después, abrí Claude Code en el repo y escribí **`/adoptar-metodo`**: lee el código, llena cada
-`COMPLETAR`, te pregunta la invariante crítica y las decisiones de negocio, arma el ROADMAP inicial y
-deja la compuerta con los comandos del CI.
+`COMPLETAR`, te pregunta la invariante crítica, el plan de Claude y las decisiones de negocio, arma
+el ROADMAP inicial y deja la compuerta con los comandos del CI.
+
+**Codex (opcional, una vez por máquina):** `npm install -g @openai/codex`, `codex login` con la
+cuenta de ChatGPT, y en Claude Code `/plugin marketplace add openai/codex-plugin-cc`,
+`/plugin install codex@openai-codex`, `/reload-plugins` y `/codex:setup`. En `~/.codex/config.toml`
+van `model = "<el más capaz de Codex>"` y `model_reasoning_effort = "high"`. No actives el review gate
+del plugin (`--enable-review-gate`): revisa cada respuesta de Claude y agota el límite.
 
 ## Qué trae
 
@@ -73,9 +83,11 @@ memoria/                        plantillas de la memoria del proyecto
 | `escribir-ficha` | "escribe la ficha", "prepara la tarea para la nube" | Ficha en `.docs/tareas/` publicada en `docs/ficha-…` |
 | `compuerta` | "pasa la compuerta", "revisa esta PR", "¿se puede mergear?" | PR revisada, combinación con `main` probada, merge y comentario con los números |
 | `orquestacion` | "coordinar olas", "lanzar sesiones en la nube"; al ejecutar un goal | Sesiones en la nube lanzadas, seguidas y llevadas a la compuerta |
+| `delegar-codex` | "que lo programe Codex"; cuando una ola le asigna una ficha a Codex | Lo que programó Codex en un clon, revisado por Claude y en una PR |
 
 Un repo que no usa sesiones en la nube se queda sin `orquestacion`, `planear-goal` y el hook de
-arranque (lo resuelve `/adoptar-metodo`); la compuerta, las fichas y las auditorías siguen sirviendo.
+arranque, y uno sin Codex, sin `delegar-codex` (lo resuelve `/adoptar-metodo`); la compuerta, las
+fichas y las auditorías siguen sirviendo.
 
 Scripts (Git Bash, desde el repo):
 
@@ -85,6 +97,8 @@ Scripts (Git Bash, desde el repo):
 - `compuerta/combinacion.sh`: arma la combinación de una PR con `main` en una carpeta, sin checkout.
 - `compuerta/compuerta.sh` + `compuerta.pasos`: la batería sobre la combinación, con un log por paso.
 - `compuerta/ci-doble.sh`: el CI de una PR dos veces.
+- `delegar-codex/preparar-clon.sh`: el clon con la rama, la ficha y el prompt para Codex.
+- `delegar-codex/codex.sh`: llama al plugin de Codex (tareas y revisiones) desde una skill.
 
 ## Flujos típicos
 
@@ -93,6 +107,8 @@ Scripts (Git Bash, desde el repo):
 - **Una PR (de quien sea):** `compuerta` antes del merge.
 - **Una tarea en la nube:** `escribir-ficha`, después `orquestacion` para lanzarla y seguirla, y
   `compuerta` para su PR.
+- **Una tarea para Codex:** `escribir-ficha`, después `delegar-codex` (Codex programa en un clon,
+  Claude revisa y abre la PR), y `compuerta`.
 - **Un goal:** `planear-goal` en una sesión; pegás su texto de arranque en una sesión nueva desde el
   repo, y esa sesión coordina con `orquestacion` hasta la condición de cierre.
 

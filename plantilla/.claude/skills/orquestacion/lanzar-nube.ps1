@@ -7,7 +7,7 @@ El prompt se escribe en ASCII (sin tildes) y el lanzador con BOM, para que Power
 Uso:
   powershell -ExecutionPolicy Bypass -File lanzar-nube.ps1 -Repo C:\ruta\repo -Id P.28 `
     -Tema "que ningun listado traiga todo" -RamaFicha docs/ficha-p28 `
-    -ArchivoFicha .docs/tareas/P28-paginacion.md -Modelo claude-sonnet-5-5 `
+    -ArchivoFicha .docs/tareas/P28-paginacion.md -Modelo claude-opus-5-5 `
     [-Base claude/p28-paginacion-abc123] [-Salida C:\carpeta] [-SoloGenerar]
 
 -Base: para una ronda de revision, la rama de la PR revisada (sin origin/).
@@ -20,7 +20,7 @@ param(
   [Parameter(Mandatory = $true)][string]$RamaFicha,
   [Parameter(Mandatory = $true)][string]$ArchivoFicha,
   [ValidateSet('claude-sonnet-5-5', 'claude-opus-5-5', 'claude-fable-5-2')]
-  [string]$Modelo = 'claude-sonnet-5-5',
+  [string]$Modelo = 'claude-opus-5-5',
   [string]$Base = '',
   [string]$Salida = $env:TEMP,
   [switch]$SoloGenerar

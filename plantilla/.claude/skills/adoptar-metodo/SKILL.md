@@ -37,17 +37,23 @@ proyecto. Esta skill las llena a partir del código y de lo que el usuario decid
    `.claude/hooks/cloud-session-start.sh` (dependencias, servicios, variables, migraciones, datos de
    prueba). Si no, borrá el hook, su entrada en `.claude/settings.json`, la sección "Sesiones en la
    nube" de `CLAUDE.md` y las skills `orquestacion` y `planear-goal`.
-8. **ROADMAP inicial:** corré la skill `organizar-proyecto`. Sin informes en `audits/`, la tabla de
+8. **Modelos:** preguntá el plan de Claude (Pro, Max, …) y si tiene Fable (su fila en `/model`), y
+   llená la línea "Plan" de "Modelos" en `CLAUDE.md`. Para Codex, corré
+   `bash .claude/skills/delegar-codex/codex.sh setup`. Si está listo, comprobá que
+   `~/.codex/config.toml` tenga `model_reasoning_effort = "high"` y en `model` el modelo de Codex que
+   el usuario elija como el más capaz; si falta, proponé la línea. Si el usuario no usa Codex, borrá
+   la skill `delegar-codex` y la línea de Codex de "Modelos".
+9. **ROADMAP inicial:** corré la skill `organizar-proyecto`. Sin informes en `audits/`, la tabla de
    deuda queda vacía y el resumen propone correr las dos auditorías.
-9. **Memoria del proyecto:** la carpeta de memoria de esta sesión es la que dice tu system prompt, y
-   según cómo se abra Claude Code puede no ser la que sembró el instalador
-   (`%USERPROFILE%\.claude\projects\<ruta-del-repo-con-guiones>\memory\`). Una sola memoria por
-   proyecto: si el proyecto ya tiene memoria en la carpeta de la sesión, completá esa y borrá la
-   sembrada; si no, llevá la sembrada a la carpeta de la sesión. Después completá `estado-actual.md`,
-   `entorno-local.md` y `decisiones-producto.md` sin repetir lo que ya dicen los docs del repo. Las
-   decisiones de negocio que no salen del código se le preguntan al usuario, juntas, en una sola
-   pregunta.
-10. **Verificá:** corré una vez cada comando de "Verificación" y anotá el resultado; lo que no se pueda
+10. **Memoria del proyecto:** la carpeta de memoria de esta sesión es la que dice tu system prompt, y
+    según cómo se abra Claude Code puede no ser la que sembró el instalador
+    (`%USERPROFILE%\.claude\projects\<ruta-del-repo-con-guiones>\memory\`). Una sola memoria por
+    proyecto: si el proyecto ya tiene memoria en la carpeta de la sesión, completá esa y borrá la
+    sembrada; si no, llevá la sembrada a la carpeta de la sesión. Después completá `estado-actual.md`,
+    `entorno-local.md` y `decisiones-producto.md` sin repetir lo que ya dicen los docs del repo. Las
+    decisiones de negocio que no salen del código se le preguntan al usuario, juntas, en una sola
+    pregunta.
+11. **Verificá:** corré una vez cada comando de "Verificación" y anotá el resultado; lo que no se pueda
     correr acá queda como "sin probar" en el resumen.
 
 ## Terminado cuando

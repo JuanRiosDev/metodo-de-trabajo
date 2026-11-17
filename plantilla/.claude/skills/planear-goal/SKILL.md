@@ -23,12 +23,13 @@ skills `orquestacion` y `compuerta`, a partir del texto de arranque que el usuar
    - **No entra:** lo que depende del usuario (llaves, cuentas, pagos, decisiones de producto) y lo
      que se deja para después, cada cosa con su motivo.
    - **Solo si sobra presupuesto:** lo cosmético.
-3. **Olas:** hasta dos sesiones por ola, con zonas que no se pisan y una migración por ola como mucho.
-   Cada tarea con su ID, su modelo (reglas de `orquestacion`), los IDs que cierra y de qué depende.
+3. **Olas:** hasta dos sesiones en la nube por ola, más una tarea para Codex si hay, con zonas que no
+   se pisan y una migración por ola como mucho. Cada tarea con su ID, quién la ejecuta y con qué
+   modelo ("Modelos" en `CLAUDE.md`), los IDs que cierra y de qué depende.
    Agrupá los arreglos chicos en la sesión cuya zona ya los toca. Si otra persona tiene ramas abiertas
    en una zona, la ola que la toca empieza después de hablarlo con el usuario.
-4. **Cierre:** las auditorías otra vez (`auditoria-seguridad` con un subagente Opus,
-   `auditoria-codigo` con uno Sonnet), una prueba punta a punta de los flujos principales contra el
+4. **Cierre:** las auditorías otra vez (`auditoria-seguridad` y `auditoria-codigo`, cada una en un
+   subagente con el modelo de "Modelos"), una prueba punta a punta de los flujos principales contra el
    sistema levantado, una PR de docs con `ROADMAP.md` al día y el resumen para el usuario.
 5. **Condición de cierre**, como lista de chequeos que se comprueban (por ejemplo: sin Altos ni
    Medios abiertos que no dependan del usuario; auditorías sin Críticos ni Altos; la prueba punta a
