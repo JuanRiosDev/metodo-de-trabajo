@@ -52,6 +52,26 @@ levantá el sistema y probá el flujo afectado antes de darlo por terminado.
   proyecto (`estado-actual.md`, y el progreso del goal si hay uno en curso), con fechas absolutas.
   El resumen dice qué memoria se tocó.
 
+## Modelos
+
+**Plan:** <!-- COMPLETAR: el plan de Claude de quien coordina (Pro, Max, …), si tiene Fable (en
+`/model`, y si su fila dice "Requires usage credits", se cobra de los créditos de uso) y si hay Codex
+con sesión iniciada. Si el plan cambia, se cambia esta línea: las reglas de abajo dependen de ella. -->
+
+El modelo se elige por lo que pide la tarea, no por ahorrar: el límite del plan está para usarlo.
+Vale para las sesiones en la nube, los subagentes, las auditorías y lo que se delega a Codex.
+
+- **Opus** (`claude-opus-5-5`) por defecto.
+- **Fable** (`claude-fable-5-2`), si el plan lo tiene, para lo más difícil: la invariante crítica,
+  concurrencia, una migración grande, una tarea que no entra en una sentada, o lo que falló dos rondas
+  con Opus. Lo que sus filtros marcan (sobre todo ciberseguridad) pasa a otro modelo, así que la
+  auditoría de seguridad va con Opus. Sin Fable en el plan, todo esto va con Opus.
+- **Codex**, si hay: programa lo que se le delega (skill `delegar-codex`) y revisa en la compuerta lo
+  que escribió Claude. Gasta el límite de ChatGPT, no el de Claude. Su modelo más capaz y el esfuerzo
+  `high` van en `~/.codex/config.toml` (`model` y `model_reasoning_effort`).
+- **Esfuerzo** `high` también en Claude: lo fija `.claude/settings.json` para las sesiones del repo,
+  locales y en la nube.
+
 ## Convenciones
 
 <!-- COMPLETAR: las del código (idioma de identificadores, comentarios y textos de UI; formato;

@@ -19,11 +19,18 @@ con merge commit, sin push directo a `main`, sin force push y sin borrar ramas.
 
 ## Pasos
 
-1. **Revisión:** `/code-review medium` si la PR es solo de tests o docs; `/code-review high` si toca la
-   invariante crítica de `CLAUDE.md`, auth o permisos. Cada hallazgo se verifica leyendo el código
-   antes de actuar, y en ejecución si es de comportamiento en ejecución: una sospecha que no se
-   reproduce no se arregla. Mirá también `git diff --stat`: tokens, reportes de cobertura y builds
-   no van.
+1. **Revisión** de un modelo distinto del que escribió la PR (lo dice el encabezado de su archivo de
+   decisiones):
+   - `/code-review high`, o `xhigh` si toca la invariante crítica de `CLAUDE.md`, auth o permisos.
+   - Si la escribió Claude y hay Codex ("Modelos" en `CLAUDE.md`), también la revisión adversarial
+     de Codex, sobre un clon de la rama y en segundo plano mientras corre la otra:
+     `git clone -q --branch <rama> "$(git remote get-url origin)" <carpeta-en-el-scratchpad>` y
+     `bash .claude/skills/delegar-codex/codex.sh adversarial-review --wait --cwd <carpeta> --base origin/<base> "<foco>"`,
+     con el foco en la invariante crítica si la toca y en lo que la PR dice cerrar.
+
+   Cada hallazgo, de Claude o de Codex, se verifica leyendo el código antes de actuar, y en ejecución
+   si es de comportamiento en ejecución: una sospecha que no se reproduce no se arregla. Mirá también
+   `git diff --stat`: tokens, reportes de cobertura y builds no van.
 2. **Qué bloquea:** un Crítico, un Alto, o un Medio que rompe lo que la PR cierra. El resto va a la
    tabla de deuda de `ROADMAP.md`, con su motivo en el `*-decisiones.md` de la tarea.
 3. **Rondas:** el arreglo de lo que bloquea va en una PR apilada (`<ID>.1`) sobre la rama de la PR,

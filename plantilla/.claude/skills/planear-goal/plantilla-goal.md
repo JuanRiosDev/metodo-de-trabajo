@@ -19,7 +19,8 @@ estar escrita en la conversación: el modo automático no la toma de la memoria.
 > Arrancá el goal <tema> de <Proyecto> que está en la memoria `goal-<tema>.md`, desde el estado de
 > `estado-actual.md`, con la forma de trabajo de las skills `orquestacion` y `compuerta`. Objetivo: <objetivo en una
 > oración>; lo que necesite llaves, cuentas o decisiones mías queda anotado. Te autorizo a lanzar las
-> sesiones en la nube de cada ola con sus fichas (como mucho dos a la vez) y a mergear a main sin
+> sesiones en la nube de cada ola con sus fichas (como mucho dos a la vez), a delegar en Codex las
+> fichas que el plan le asigna, y a mergear a main sin
 > pedirme OK cada PR que pase la compuerta: revisión verificada sin bloqueantes, la combinación con la
 > integración en verde dos veces, el sistema levantado si toca el arranque y el CI en verde. Siempre
 > con merge commit, sin push directo a main, sin force push y sin borrar ramas. <Quién se menciona en
@@ -38,18 +39,19 @@ estar escrita en la conversación: el modo automático no la toma de la memoria.
 
 ## Olas
 
-Hasta dos sesiones por ola, con zonas que no se pisan y una migración por ola como mucho.
+Hasta dos sesiones en la nube por ola, más una tarea para Codex, con zonas que no se pisan y una
+migración por ola como mucho. Los modelos, según "Modelos" en `CLAUDE.md`.
 
 ### Ola <N>
 
-- **<ID>, <tipo>, <Sonnet|Opus>:** <qué hace>. Cierra <D-NN…>. Zona: <carpetas>.
+- **<ID>, <tipo>, <Opus|Fable|Codex>:** <qué hace>. Cierra <D-NN…>. Zona: <carpetas>.
 - **<ID>, …**
 
 ### Cierre
 
-- Las dos auditorías (seguridad con un subagente Opus, código con uno Sonnet).
-- La prueba punta a punta con un subagente Sonnet.
-- Una PR de docs con Sonnet: `ROADMAP.md` al día.
+- Las dos auditorías (seguridad y código), cada una en un subagente.
+- La prueba punta a punta con un subagente.
+- Una PR de docs: `ROADMAP.md` al día.
 - El resumen para el usuario.
 
 ## Condición de cierre
