@@ -4,7 +4,7 @@
 # los .env del repo sin imprimirlos y escribe el prompt de Codex en <carpeta>/.git/codex-prompt.md.
 # Correr desde cualquier carpeta dentro del repo.
 #
-# Uso: preparar-clon.sh <ID> <ficha> <carpeta> [base=main]
+# Uso: preparar-clon.sh <ID> <ficha> <carpeta> [base=la rama principal de origin]
 #   preparar-clon.sh P.31 ./P31-seguridad.md "$SCRATCH/codex-p31"
 # Para una ronda de revision, la base es la rama de la PR revisada.
 set -euo pipefail
@@ -15,17 +15,22 @@ fi
 ID=$1
 FICHA=$2
 DIR=$3
-BASE=${4:-main}
-BASE=${BASE#origin/}
+BASE=${4:-}
 
 if [ ! -f "$FICHA" ]; then
   echo "No existe la ficha $FICHA"
   exit 1
 fi
-if [ -e "$DIR" ]; then
+# mkdir sin -p falla si la carpeta ya existe: es la forma atomica de tomarla. Solo despues se arma el
+# trap, asi nunca borra una carpeta de otra corrida.
+mkdir -p "$(dirname "$DIR")"
+if ! mkdir "$DIR" 2>/dev/null; then
   echo "Ya existe $DIR: si es la misma tarea, segui en ese clon; si no, elegi otra carpeta."
   exit 1
 fi
+# Si algo falla de aca en adelante, se borra la carpeta: un clon a medias (sin rama, ficha ni prompt)
+# no sirve, y al relanzar el chequeo de arriba lo tomaria por uno valido.
+trap 'rm -rf -- "$DIR"' EXIT
 
 RAIZ=$(git rev-parse --show-toplevel)
 URL=$(git remote get-url origin)
@@ -34,11 +39,19 @@ NOMBRE=$(basename "$FICHA")
 
 # Un clon nuevo no tiene los hooks del repo instalados: el checkout y el commit no los disparan.
 git clone -q --no-checkout "$URL" "$DIR"
+# Sin base, la rama principal: el clon recien hecho trae el origin/HEAD que el remoto dice hoy.
+BASE=${BASE:-$(git -C "$DIR" symbolic-ref -q --short refs/remotes/origin/HEAD || echo origin/main)}
+BASE=${BASE#origin/}
 git -C "$DIR" checkout -q -b "$RAMA" "origin/$BASE"
 mkdir -p "$DIR/.docs/tareas"
 cp "$FICHA" "$DIR/.docs/tareas/$NOMBRE"
 git -C "$DIR" add ".docs/tareas/$NOMBRE"
-git -C "$DIR" commit -q -m "docs: ficha de $ID"
+# Si la base ya trae la ficha igual (una ficha mergeada, o la de una ronda), no hay nada que commitear.
+FICHA_ESTADO="ya estaba en la base"
+if ! git -C "$DIR" diff --cached --quiet; then
+  git -C "$DIR" commit -q -m "docs: ficha de $ID"
+  FICHA_ESTADO="commiteada"
+fi
 
 # Los .env que git ignora en el repo, a la misma ruta del clon. Solo se nombran.
 (cd "$RAIZ" && git ls-files --others --ignored --exclude-standard --directory -z) |
@@ -71,9 +84,10 @@ proyecto, la verificación, las convenciones y lo que no se toca valen para vos.
   ficha.
 EOF
 
+trap - EXIT
 MOSTRAR=$DIR
 if command -v cygpath >/dev/null 2>&1; then MOSTRAR=$(cygpath -m "$DIR"); fi
-echo "clon en $MOSTRAR, rama $RAMA desde origin/$BASE ($(git -C "$DIR" rev-parse --short "origin/$BASE")), ficha commiteada"
+echo "clon en $MOSTRAR, rama $RAMA desde origin/$BASE ($(git -C "$DIR" rev-parse --short "origin/$BASE")), ficha $FICHA_ESTADO"
 echo "prompt: $MOSTRAR/.git/codex-prompt.md"
 echo "siguiente: instalar las dependencias en el clon y lanzar"
 echo "  bash .claude/skills/delegar-codex/codex.sh task --write --cwd \"$MOSTRAR\" --prompt-file \"$MOSTRAR/.git/codex-prompt.md\""

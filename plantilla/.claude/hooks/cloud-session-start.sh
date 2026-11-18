@@ -36,11 +36,13 @@ step() {
 # --- Variables de entorno de esta VM ------------------------------------------------------------
 # COMPLETAR: generar el .env de desarrollo si no existe (secretos aleatorios, URLs a localhost).
 # Un secreto que cifra datos sembrados tiene que sobrevivir entre sesiones: se genera una vez.
+# Todo lo de este .env se exporta a cada comando de la sesión: un NODE_ENV=development exportado hace
+# que un build de producción (`vite build`, por ejemplo) salga en modo desarrollo. Si la app ya asume
+# development cuando falta, no lo pongas.
 ENV_FILE="$ROOT/.env"
 # if [ ! -f "$ENV_FILE" ]; then
 #   rand() { node -e "process.stdout.write(require('crypto').randomBytes($1).toString('$2'))"; }
 #   cat >"$ENV_FILE" <<EOF
-# NODE_ENV=development
 # DATABASE_URL=postgresql://dev:dev@localhost:5432/dev
 # JWT_SECRET=$(rand 48 base64url)
 # EOF
@@ -70,12 +72,16 @@ fi
 
 # --- Servicios ----------------------------------------------------------------------------------
 # COMPLETAR: arrancar lo que el proyecto necesita (vienen instalados en la imagen, apagados).
+# El hook puede no correr como root: `service` va con `sudo -n` (sin pedir contraseña).
+as_root() {
+  if [ "$(id -u)" = 0 ]; then "$@"; else sudo -n "$@"; fi
+}
 # if ! pg_isready -h localhost -q 2>/dev/null; then
-#   step "Postgres: arrancar" service postgresql start
+#   step "Postgres: arrancar" as_root service postgresql start
 #   for _ in $(seq 1 30); do pg_isready -h localhost -q && break; sleep 1; done
 # fi
 # if ! redis-cli ping >/dev/null 2>&1; then
-#   step "Redis: arrancar" service redis-server start
+#   step "Redis: arrancar" as_root service redis-server start
 # fi
 
 # --- Dependencias: se instalan solo cuando cambia el lockfile -----------------------------------
@@ -105,6 +111,8 @@ git -C "$ROOT" config --unset core.hooksPath 2>/dev/null
 
 # --- Base de datos: migraciones y datos de prueba -----------------------------------------------
 # COMPLETAR: migrar y sembrar, con un chequeo para no resembrar en una sesión reanudada.
+# Una herramienta que se llame directo con npx va con `npx --no-install`: si `npm ci` falló, npx
+# bajaría la versión más nueva en vez de la del lockfile.
 # cd "$ROOT" && step "Migraciones" npm run db:migrate
 # step "Seed" npm run db:seed
 

@@ -4,7 +4,7 @@
 # (dependencias, builds, cobertura, .env) para que la siguiente corrida aproveche la cache.
 # Correr desde cualquier carpeta dentro del repo.
 #
-# Uso: combinacion.sh <rama-o-sha> <carpeta> [base=origin/main]
+# Uso: combinacion.sh <rama-o-sha> <carpeta> [base=la rama principal de origin]
 #   combinacion.sh origin/claude/p31-seguridad-abc123 "$SCRATCH/combo"
 #
 # La primera vez la carpeta no tiene dependencias: instalalas ahi (npm ci, etc.) o enlaza las del
@@ -16,13 +16,25 @@ if [ $# -lt 2 ]; then
 fi
 REF=$1
 DIR=$2
-BASE=${3:-origin/main}
 
 # Carpetas y archivos que la sincronizacion no toca.
 PRUNE=(node_modules dist build coverage .venv venv __pycache__ .next .turbo generated)
 KEEP_FILES='(^|/)\.env(\.local)?$|^\.combinacion$'
 
 git fetch -q origin
+# Rama principal: la que origin dice hoy (sigue un renombre o un clon sin origin/HEAD), si no la
+# que quedo registrada, y si no main. Va despues del fetch: set-head -a solo funciona si la rama
+# nueva ya esta en origin/.
+principal() {
+  local r
+  git remote set-head origin -a >/dev/null 2>&1 || true
+  if r=$(git symbolic-ref -q --short refs/remotes/origin/HEAD) && git rev-parse -q --verify "$r^{commit}" >/dev/null; then
+    echo "$r"
+  else
+    echo origin/main
+  fi
+}
+BASE=${3:-$(principal)}
 HEAD_SHA=$(git rev-parse "$REF^{commit}")
 BASE_SHA=$(git rev-parse "$BASE^{commit}")
 
@@ -53,4 +65,4 @@ git archive "$COMBO" | tar -x -C "$DIR"
 printf 'rama %s\nbase %s\ncombinacion %s\narbol %s\n' "$HEAD_SHA" "$BASE_SHA" "$COMBO" "$TREE" >"$DIR/.combinacion"
 echo "combinacion $(git rev-parse --short "$COMBO") en $DIR ($SOBRAN archivos viejos borrados)"
 echo "rama ${HEAD_SHA:0:7} + base ${BASE_SHA:0:7} -> arbol $TREE"
-echo "despues del merge: git rev-parse origin/main^{tree} tiene que dar $TREE"
+echo "despues del merge: git rev-parse $BASE^{tree} tiene que dar $TREE"

@@ -2,7 +2,7 @@
 # Publica una ficha en una rama docs/ficha-... sin checkout ni worktree: no toca el arbol de trabajo
 # ni dispara los hooks de git del repo. Correr desde cualquier carpeta dentro del repo.
 #
-# Uso: ficha-rama.sh <archivo-local> <ruta-en-repo> <rama> "<mensaje>" [base=origin/main]
+# Uso: ficha-rama.sh <archivo-local> <ruta-en-repo> <rama> "<mensaje>" [base=la rama principal de origin]
 #   ficha-rama.sh ./P31-seguridad.md .docs/tareas/P31-seguridad.md docs/ficha-p31 "docs: ficha de P.31"
 set -euo pipefail
 if [ $# -lt 4 ]; then
@@ -13,9 +13,26 @@ SRC=$1
 DEST=$2
 RAMA=$3
 MSG=$4
-BASE=${5:-origin/main}
+# Solo ramas de fichas: nunca la principal ni la rama de una sesion.
+case "$RAMA" in
+  docs/ficha-*) ;;
+  *) echo "La rama tiene que empezar con docs/ficha- (llego: $RAMA)"; exit 2 ;;
+esac
 
 git fetch -q origin
+# Rama principal: la que origin dice hoy (sigue un renombre o un clon sin origin/HEAD), si no la
+# que quedo registrada, y si no main. Va despues del fetch: set-head -a solo funciona si la rama
+# nueva ya esta en origin/.
+principal() {
+  local r
+  git remote set-head origin -a >/dev/null 2>&1 || true
+  if r=$(git symbolic-ref -q --short refs/remotes/origin/HEAD) && git rev-parse -q --verify "$r^{commit}" >/dev/null; then
+    echo "$r"
+  else
+    echo origin/main
+  fi
+}
+BASE=${5:-$(principal)}
 BASE_SHA=$(git rev-parse "$BASE^{commit}")
 
 IDX=$(mktemp -u "${TMPDIR:-/tmp}/ficha-idx-XXXXXX")
