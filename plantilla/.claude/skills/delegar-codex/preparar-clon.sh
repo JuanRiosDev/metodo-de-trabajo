@@ -4,7 +4,7 @@
 # los .env del repo sin imprimirlos y escribe el prompt de Codex en <carpeta>/.git/codex-prompt.md.
 # Correr desde cualquier carpeta dentro del repo.
 #
-# Uso: preparar-clon.sh <ID> <ficha> <carpeta> [base=main]
+# Uso: preparar-clon.sh <ID> <ficha> <carpeta> [base=la rama principal de origin]
 #   preparar-clon.sh P.31 ./P31-seguridad.md "$SCRATCH/codex-p31"
 # Para una ronda de revision, la base es la rama de la PR revisada.
 set -euo pipefail
@@ -15,7 +15,7 @@ fi
 ID=$1
 FICHA=$2
 DIR=$3
-BASE=${4:-main}
+BASE=${4:-$(git symbolic-ref -q --short refs/remotes/origin/HEAD || echo origin/main)}
 BASE=${BASE#origin/}
 
 if [ ! -f "$FICHA" ]; then
@@ -32,13 +32,22 @@ URL=$(git remote get-url origin)
 RAMA="codex/$(printf '%s' "$ID" | tr 'A-Z.' 'a-z-' | tr -cd 'a-z0-9-')"
 NOMBRE=$(basename "$FICHA")
 
+# Si algo falla de aca en adelante, se borra la carpeta: un clon a medias (sin rama, ficha ni prompt)
+# no sirve, y al relanzar el chequeo de arriba lo tomaria por uno valido. La carpeta no existia.
+trap 'rm -rf "$DIR"' EXIT
+
 # Un clon nuevo no tiene los hooks del repo instalados: el checkout y el commit no los disparan.
 git clone -q --no-checkout "$URL" "$DIR"
 git -C "$DIR" checkout -q -b "$RAMA" "origin/$BASE"
 mkdir -p "$DIR/.docs/tareas"
 cp "$FICHA" "$DIR/.docs/tareas/$NOMBRE"
 git -C "$DIR" add ".docs/tareas/$NOMBRE"
-git -C "$DIR" commit -q -m "docs: ficha de $ID"
+# Si la base ya trae la ficha igual (una ficha mergeada, o la de una ronda), no hay nada que commitear.
+FICHA_ESTADO="ya estaba en la base"
+if ! git -C "$DIR" diff --cached --quiet; then
+  git -C "$DIR" commit -q -m "docs: ficha de $ID"
+  FICHA_ESTADO="commiteada"
+fi
 
 # Los .env que git ignora en el repo, a la misma ruta del clon. Solo se nombran.
 (cd "$RAIZ" && git ls-files --others --ignored --exclude-standard --directory -z) |
@@ -71,9 +80,10 @@ proyecto, la verificación, las convenciones y lo que no se toca valen para vos.
   ficha.
 EOF
 
+trap - EXIT
 MOSTRAR=$DIR
 if command -v cygpath >/dev/null 2>&1; then MOSTRAR=$(cygpath -m "$DIR"); fi
-echo "clon en $MOSTRAR, rama $RAMA desde origin/$BASE ($(git -C "$DIR" rev-parse --short "origin/$BASE")), ficha commiteada"
+echo "clon en $MOSTRAR, rama $RAMA desde origin/$BASE ($(git -C "$DIR" rev-parse --short "origin/$BASE")), ficha $FICHA_ESTADO"
 echo "prompt: $MOSTRAR/.git/codex-prompt.md"
 echo "siguiente: instalar las dependencias en el clon y lanzar"
 echo "  bash .claude/skills/delegar-codex/codex.sh task --write --cwd \"$MOSTRAR\" --prompt-file \"$MOSTRAR/.git/codex-prompt.md\""

@@ -43,7 +43,13 @@ while true; do
     fi
   done <<<"$data"
 
-  prs=$(gh api "repos/$REPO/pulls?state=open&per_page=50" --jq '.[] | "#\(.number) \(.head.ref) \(.title)"' 2>/dev/null | sort) || prs="$prev_prs"
+  # Sin pipefail, el codigo de salida seria el de sort: una consulta fallida se leeria como "ninguna
+  # PR abierta" y avisaria cierres falsos. Se consulta primero y se ordena despues.
+  if raw=$(gh api "repos/$REPO/pulls?state=open&per_page=50" --jq '.[] | "#\(.number) \(.head.ref) \(.title)"' 2>/dev/null); then
+    prs=$(sort <<<"$raw")
+  else
+    prs="$prev_prs"
+  fi
   comm -13 <(echo "$prev_prs") <(echo "$prs") | grep . | sed 's/^/PR-ABIERTA /'
   comm -23 <(echo "$prev_prs") <(echo "$prs") | grep . | sed 's/^/PR-CERRADA /'
   prev_prs=$prs

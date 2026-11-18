@@ -32,7 +32,13 @@ proyecto. Esta skill las llena a partir del código y de lo que el usuario decid
 6. **Compuerta:** reemplazá el ejemplo de `.claude/skills/compuerta/compuerta.pasos` por los
    comandos del CI (o, sin CI, los chequeos que `CLAUDE.md` pide antes de entregar), en su orden, con
    la prueba de integración dos veces. Corré la batería una vez sobre una combinación de `main`
-   consigo misma para comprobar los pasos.
+   consigo misma para comprobar los pasos. Si hay CI, mirá dos trampas y proponé el arreglo (el CI es
+   infra: lo aprueba el usuario):
+   - en los push a `main`, el grupo de `concurrency` tiene que ser el commit (`github.sha`), no la
+     rama: con un grupo por rama, GitHub cancela las corridas pendientes de varios merges seguidos;
+   - un paso que no hace fallar la corrida (`continue-on-error`, como un audit que todavía no
+     bloquea) tiene que decir en el resumen del job cuando no corrió: un resumen vacío se lee como
+     "sin hallazgos".
 7. **Nube:** preguntá si el proyecto va a usar sesiones en la nube. Si sí, adaptá
    `.claude/hooks/cloud-session-start.sh` (dependencias, servicios, variables, migraciones, datos de
    prueba). Si no, borrá el hook, su entrada en `.claude/settings.json`, la sección "Sesiones en la

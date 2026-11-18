@@ -4,7 +4,7 @@
 # (dependencias, builds, cobertura, .env) para que la siguiente corrida aproveche la cache.
 # Correr desde cualquier carpeta dentro del repo.
 #
-# Uso: combinacion.sh <rama-o-sha> <carpeta> [base=origin/main]
+# Uso: combinacion.sh <rama-o-sha> <carpeta> [base=la rama principal de origin]
 #   combinacion.sh origin/claude/p31-seguridad-abc123 "$SCRATCH/combo"
 #
 # La primera vez la carpeta no tiene dependencias: instalalas ahi (npm ci, etc.) o enlaza las del
@@ -16,7 +16,7 @@ if [ $# -lt 2 ]; then
 fi
 REF=$1
 DIR=$2
-BASE=${3:-origin/main}
+BASE=${3:-$(git symbolic-ref -q --short refs/remotes/origin/HEAD || echo origin/main)}
 
 # Carpetas y archivos que la sincronizacion no toca.
 PRUNE=(node_modules dist build coverage .venv venv __pycache__ .next .turbo generated)
@@ -53,4 +53,4 @@ git archive "$COMBO" | tar -x -C "$DIR"
 printf 'rama %s\nbase %s\ncombinacion %s\narbol %s\n' "$HEAD_SHA" "$BASE_SHA" "$COMBO" "$TREE" >"$DIR/.combinacion"
 echo "combinacion $(git rev-parse --short "$COMBO") en $DIR ($SOBRAN archivos viejos borrados)"
 echo "rama ${HEAD_SHA:0:7} + base ${BASE_SHA:0:7} -> arbol $TREE"
-echo "despues del merge: git rev-parse origin/main^{tree} tiene que dar $TREE"
+echo "despues del merge: git rev-parse $BASE^{tree} tiene que dar $TREE"

@@ -2,7 +2,7 @@
 # Publica una ficha en una rama docs/ficha-... sin checkout ni worktree: no toca el arbol de trabajo
 # ni dispara los hooks de git del repo. Correr desde cualquier carpeta dentro del repo.
 #
-# Uso: ficha-rama.sh <archivo-local> <ruta-en-repo> <rama> "<mensaje>" [base=origin/main]
+# Uso: ficha-rama.sh <archivo-local> <ruta-en-repo> <rama> "<mensaje>" [base=la rama principal de origin]
 #   ficha-rama.sh ./P31-seguridad.md .docs/tareas/P31-seguridad.md docs/ficha-p31 "docs: ficha de P.31"
 set -euo pipefail
 if [ $# -lt 4 ]; then
@@ -13,7 +13,13 @@ SRC=$1
 DEST=$2
 RAMA=$3
 MSG=$4
-BASE=${5:-origin/main}
+BASE=${5:-$(git symbolic-ref -q --short refs/remotes/origin/HEAD || echo origin/main)}
+
+# Solo ramas de fichas: nunca la principal ni la rama de una sesion.
+case "$RAMA" in
+  docs/ficha-*) ;;
+  *) echo "La rama tiene que empezar con docs/ficha- (llego: $RAMA)"; exit 2 ;;
+esac
 
 git fetch -q origin
 BASE_SHA=$(git rev-parse "$BASE^{commit}")
