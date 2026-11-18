@@ -16,7 +16,18 @@ if [ $# -lt 2 ]; then
 fi
 REF=$1
 DIR=$2
-BASE=${3:-$(git symbolic-ref -q --short refs/remotes/origin/HEAD || echo origin/main)}
+# Rama principal: la que origin dice hoy (sigue un renombre o un clon sin origin/HEAD), si no la
+# que quedo registrada, y si no main.
+principal() {
+  local r
+  git remote set-head origin -a >/dev/null 2>&1 || true
+  if r=$(git symbolic-ref -q --short refs/remotes/origin/HEAD) && git rev-parse -q --verify "$r^{commit}" >/dev/null; then
+    echo "$r"
+  else
+    echo origin/main
+  fi
+}
+BASE=${3:-$(principal)}
 
 # Carpetas y archivos que la sincronizacion no toca.
 PRUNE=(node_modules dist build coverage .venv venv __pycache__ .next .turbo generated)

@@ -26,7 +26,10 @@ proyecto. Esta skill las llena a partir del código y de lo que el usuario decid
 4. **Llená `CLAUDE.md`:** Arquitectura, Cómo correr, Verificación (los comandos exactos del CI),
    Convenciones y "Lo que no se toca". Solo lo que no se deduce mirando las carpetas. Si las
    convenciones reales del repo (commits, ramas, merges) difieren de las del método, preguntá cuál
-   manda.
+   manda. Los docs del método dicen `main`: si la rama principal es otra
+   (`git symbolic-ref --short refs/remotes/origin/HEAD`), reemplazala en `CLAUDE.md`,
+   `.docs/tareas/README.md` y las skills con sus plantillas (`grep -rnw main`). Los scripts la toman
+   solos de origin.
 5. **Invariante crítica:** proponé una o dos a partir del dominio (aislamiento entre clientes, datos de
    menores, plata, la propiedad de los datos por usuario) y que el usuario elija. Es su decisión.
 6. **Compuerta:** reemplazá el ejemplo de `.claude/skills/compuerta/compuerta.pasos` por los
@@ -34,8 +37,9 @@ proyecto. Esta skill las llena a partir del código y de lo que el usuario decid
    la prueba de integración dos veces. Corré la batería una vez sobre una combinación de `main`
    consigo misma para comprobar los pasos. Si hay CI, mirá dos trampas y proponé el arreglo (el CI es
    infra: lo aprueba el usuario):
-   - en los push a `main`, el grupo de `concurrency` tiene que ser el commit (`github.sha`), no la
-     rama: con un grupo por rama, GitHub cancela las corridas pendientes de varios merges seguidos;
+   - en los push a la rama principal, el grupo de `concurrency` tiene que ser el commit
+     (`github.sha`), no la rama: con un grupo por rama, GitHub cancela las corridas pendientes de
+     varios merges seguidos;
    - un paso que no hace fallar la corrida (`continue-on-error`, como un audit que todavía no
      bloquea) tiene que decir en el resumen del job cuando no corrió: un resumen vacío se lee como
      "sin hallazgos".

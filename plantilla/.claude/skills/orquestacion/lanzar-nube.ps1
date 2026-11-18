@@ -39,10 +39,14 @@ function ConvertTo-Ascii([string]$texto) {
 }
 
 $Repo = (Resolve-Path $Repo).Path
-# Rama principal del repo (main o master), segun origin/HEAD.
+# Rama principal del repo (main o master): la que origin dice hoy, si no la que quedo registrada, y
+# si no main. Sin red o sin git en el PATH de PowerShell, cae en lo siguiente en vez de cortar.
 $principal = 'main'
-$cabeza = git -C $Repo symbolic-ref -q --short refs/remotes/origin/HEAD
-if ($LASTEXITCODE -eq 0 -and $cabeza) { $principal = $cabeza -replace '^origin/', '' }
+try { git -C $Repo remote set-head origin -a *> $null } catch { }
+try {
+  $cabeza = git -C $Repo symbolic-ref -q --short refs/remotes/origin/HEAD
+  if ($LASTEXITCODE -eq 0 -and $cabeza) { $principal = $cabeza -replace '^origin/', '' }
+} catch { }
 if ($Base) {
   $origen = "tu rama sale de origin/$Base (no de $principal), la PR va con base $Base, y no pusheas a esa rama ni le mergeas $principal"
 } else {

@@ -45,7 +45,7 @@ while true; do
 
   # Sin pipefail, el codigo de salida seria el de sort: una consulta fallida se leeria como "ninguna
   # PR abierta" y avisaria cierres falsos. Se consulta primero y se ordena despues.
-  if raw=$(gh api "repos/$REPO/pulls?state=open&per_page=50" --jq '.[] | "#\(.number) \(.head.ref) \(.title)"' 2>/dev/null); then
+  if raw=$(gh api "repos/$REPO/pulls?state=open&per_page=100" --paginate --jq '.[] | "#\(.number) \(.head.ref) \(.title)"' 2>/dev/null); then
     prs=$(sort <<<"$raw")
   else
     prs="$prev_prs"

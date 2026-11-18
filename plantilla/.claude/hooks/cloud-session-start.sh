@@ -111,9 +111,9 @@ git -C "$ROOT" config --unset core.hooksPath 2>/dev/null
 
 # --- Base de datos: migraciones y datos de prueba -----------------------------------------------
 # COMPLETAR: migrar y sembrar, con un chequeo para no resembrar en una sesión reanudada.
-# Una herramienta del proyecto se llama con `npx --no-install`: si `npm ci` falló, npx bajaría la
-# versión más nueva en vez de la del lockfile.
-# cd "$ROOT" && step "Migraciones" npx --no-install prisma migrate deploy
+# Una herramienta que se llame directo con npx va con `npx --no-install`: si `npm ci` falló, npx
+# bajaría la versión más nueva en vez de la del lockfile.
+# cd "$ROOT" && step "Migraciones" npm run db:migrate
 # step "Seed" npm run db:seed
 
 # --- Resumen: Claude Code lo recibe como contexto al arrancar -----------------------------------

@@ -15,26 +15,39 @@ fi
 ID=$1
 FICHA=$2
 DIR=$3
-BASE=${4:-$(git symbolic-ref -q --short refs/remotes/origin/HEAD || echo origin/main)}
+# Rama principal: la que origin dice hoy (sigue un renombre o un clon sin origin/HEAD), si no la
+# que quedo registrada, y si no main.
+principal() {
+  local r
+  git remote set-head origin -a >/dev/null 2>&1 || true
+  if r=$(git symbolic-ref -q --short refs/remotes/origin/HEAD) && git rev-parse -q --verify "$r^{commit}" >/dev/null; then
+    echo "$r"
+  else
+    echo origin/main
+  fi
+}
+BASE=${4:-$(principal)}
 BASE=${BASE#origin/}
 
 if [ ! -f "$FICHA" ]; then
   echo "No existe la ficha $FICHA"
   exit 1
 fi
-if [ -e "$DIR" ]; then
+# mkdir sin -p falla si la carpeta ya existe: es la forma atomica de tomarla. Solo despues se arma el
+# trap, asi nunca borra una carpeta de otra corrida.
+mkdir -p "$(dirname "$DIR")"
+if ! mkdir "$DIR" 2>/dev/null; then
   echo "Ya existe $DIR: si es la misma tarea, segui en ese clon; si no, elegi otra carpeta."
   exit 1
 fi
+# Si algo falla de aca en adelante, se borra la carpeta: un clon a medias (sin rama, ficha ni prompt)
+# no sirve, y al relanzar el chequeo de arriba lo tomaria por uno valido.
+trap 'rm -rf -- "$DIR"' EXIT
 
 RAIZ=$(git rev-parse --show-toplevel)
 URL=$(git remote get-url origin)
 RAMA="codex/$(printf '%s' "$ID" | tr 'A-Z.' 'a-z-' | tr -cd 'a-z0-9-')"
 NOMBRE=$(basename "$FICHA")
-
-# Si algo falla de aca en adelante, se borra la carpeta: un clon a medias (sin rama, ficha ni prompt)
-# no sirve, y al relanzar el chequeo de arriba lo tomaria por uno valido. La carpeta no existia.
-trap 'rm -rf "$DIR"' EXIT
 
 # Un clon nuevo no tiene los hooks del repo instalados: el checkout y el commit no los disparan.
 git clone -q --no-checkout "$URL" "$DIR"
