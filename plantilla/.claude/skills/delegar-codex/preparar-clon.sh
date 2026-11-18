@@ -15,19 +15,7 @@ fi
 ID=$1
 FICHA=$2
 DIR=$3
-# Rama principal: la que origin dice hoy (sigue un renombre o un clon sin origin/HEAD), si no la
-# que quedo registrada, y si no main.
-principal() {
-  local r
-  git remote set-head origin -a >/dev/null 2>&1 || true
-  if r=$(git symbolic-ref -q --short refs/remotes/origin/HEAD) && git rev-parse -q --verify "$r^{commit}" >/dev/null; then
-    echo "$r"
-  else
-    echo origin/main
-  fi
-}
-BASE=${4:-$(principal)}
-BASE=${BASE#origin/}
+BASE=${4:-}
 
 if [ ! -f "$FICHA" ]; then
   echo "No existe la ficha $FICHA"
@@ -51,6 +39,9 @@ NOMBRE=$(basename "$FICHA")
 
 # Un clon nuevo no tiene los hooks del repo instalados: el checkout y el commit no los disparan.
 git clone -q --no-checkout "$URL" "$DIR"
+# Sin base, la rama principal: el clon recien hecho trae el origin/HEAD que el remoto dice hoy.
+BASE=${BASE:-$(git -C "$DIR" symbolic-ref -q --short refs/remotes/origin/HEAD || echo origin/main)}
+BASE=${BASE#origin/}
 git -C "$DIR" checkout -q -b "$RAMA" "origin/$BASE"
 mkdir -p "$DIR/.docs/tareas"
 cp "$FICHA" "$DIR/.docs/tareas/$NOMBRE"

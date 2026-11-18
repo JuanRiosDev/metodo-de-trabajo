@@ -16,8 +16,15 @@ if [ $# -lt 2 ]; then
 fi
 REF=$1
 DIR=$2
+
+# Carpetas y archivos que la sincronizacion no toca.
+PRUNE=(node_modules dist build coverage .venv venv __pycache__ .next .turbo generated)
+KEEP_FILES='(^|/)\.env(\.local)?$|^\.combinacion$'
+
+git fetch -q origin
 # Rama principal: la que origin dice hoy (sigue un renombre o un clon sin origin/HEAD), si no la
-# que quedo registrada, y si no main.
+# que quedo registrada, y si no main. Va despues del fetch: set-head -a solo funciona si la rama
+# nueva ya esta en origin/.
 principal() {
   local r
   git remote set-head origin -a >/dev/null 2>&1 || true
@@ -28,12 +35,6 @@ principal() {
   fi
 }
 BASE=${3:-$(principal)}
-
-# Carpetas y archivos que la sincronizacion no toca.
-PRUNE=(node_modules dist build coverage .venv venv __pycache__ .next .turbo generated)
-KEEP_FILES='(^|/)\.env(\.local)?$|^\.combinacion$'
-
-git fetch -q origin
 HEAD_SHA=$(git rev-parse "$REF^{commit}")
 BASE_SHA=$(git rev-parse "$BASE^{commit}")
 

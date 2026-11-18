@@ -13,8 +13,16 @@ SRC=$1
 DEST=$2
 RAMA=$3
 MSG=$4
+# Solo ramas de fichas: nunca la principal ni la rama de una sesion.
+case "$RAMA" in
+  docs/ficha-*) ;;
+  *) echo "La rama tiene que empezar con docs/ficha- (llego: $RAMA)"; exit 2 ;;
+esac
+
+git fetch -q origin
 # Rama principal: la que origin dice hoy (sigue un renombre o un clon sin origin/HEAD), si no la
-# que quedo registrada, y si no main.
+# que quedo registrada, y si no main. Va despues del fetch: set-head -a solo funciona si la rama
+# nueva ya esta en origin/.
 principal() {
   local r
   git remote set-head origin -a >/dev/null 2>&1 || true
@@ -25,14 +33,6 @@ principal() {
   fi
 }
 BASE=${5:-$(principal)}
-
-# Solo ramas de fichas: nunca la principal ni la rama de una sesion.
-case "$RAMA" in
-  docs/ficha-*) ;;
-  *) echo "La rama tiene que empezar con docs/ficha- (llego: $RAMA)"; exit 2 ;;
-esac
-
-git fetch -q origin
 BASE_SHA=$(git rev-parse "$BASE^{commit}")
 
 IDX=$(mktemp -u "${TMPDIR:-/tmp}/ficha-idx-XXXXXX")
